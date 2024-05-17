@@ -88,22 +88,9 @@ class Server:
             "total_pages": total_pages,
         }
 
-    def get_hyper_index(self, page: int = None, page_size: int = 10) -> Dict:
+    def get_hyper(self, page: int = 1, page_size: int = 10) -> dict:
         """
-        Returns a dictionary containing hypermedia links for pagination
-        resilient to data deletions.
-
-        Args:
-            index: The starting index for pagination (default: None).
-            page_size: The number of items per page (default: 10).
-
-        Returns:
-            A dictionary containing the following key-value pairs:
-                index: The current start index of the returned page.
-                next_index: The next index to query with.
-                page_size: The current page size.
-                data: The actual page of the dataset.
-        """
+        Retrieves some detailed information about a given page"""
 
         data_page = self.get_page(page, page_size)
         start, end = index_range(page, page_size)
