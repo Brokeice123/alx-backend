@@ -88,7 +88,7 @@ class Server:
             "total_pages": total_pages,
         }
 
-    def get_hyper_index(self, index: int = None, page_size: int = 10) -> Dict:
+    def get_hyper_index(self, page: int = None, page_size: int = 10) -> Dict:
         """
         Returns a dictionary containing hypermedia links for pagination
         resilient to data deletions.
@@ -105,21 +105,16 @@ class Server:
                 data: The actual page of the dataset.
         """
 
-        assert index is None or 0 <= index < len(self.indexed_dataset), "index out of range"
-
-        if index is None:
-            index = 0
-
-        data = []
-        current_index = index
-        for _ in range(page_size):
-            if current_index in self.indexed_dataset:
-                data.append(self.indexed_dataset[current_index])
-            current_index += 1
-
-        return {
-            "index": index,
-            "data": data,
-            "page_size": page_size,
-            "next_index": current_index
+        data_page = self.get_page(page, page_size)
+        start, end = index_range(page, page_size)
+        total_pages = math.ceil(len(self.__dataset) / page_size)
+        page_info = {
+            'page_size': len(data_page),
+            'page': page,
+            'data': data_page,
+            'next_page': page + 1 if end < len(self.__dataset) else None,
+            'prev_page': page - 1 if start > 0 else None,
+            'total_pages': total_pages,
         }
+
+        return page_info
