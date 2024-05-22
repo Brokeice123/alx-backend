@@ -28,7 +28,7 @@ class LIFOCache(BaseCaching):
         else:
             if len(self.cache_data) >= self.MAX_ITEMS:
                 # lifo eviction: remove the last item
-                last_key = next(reversed(self.cache_data))
+                last_key = list(self.cache_data.keys())[-1]
                 del self.cache_data[last_key]
                 print("DISCARD: {}".format(last_key))
             self.cache_data[key] = item
