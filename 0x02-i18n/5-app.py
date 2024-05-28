@@ -7,6 +7,19 @@ Force locale with URL parameter 5-app.py
 from flask import Flask, render_template, request, g
 from flask_babel import Babel
 
+# configuring the flask app
+app = Flask(__name__)
+app.config.from_object(Config)
+app.url_map.strict_slashes = False
+babel = Babel(app)
+
+users = {
+    1: {"name": "Balou", "locale": "fr", "timezone": "Europe/Paris"},
+    2: {"name": "Beyonce", "locale": "en", "timezone": "US/Central"},
+    3: {"name": "Spock", "locale": "kg", "timezone": "Vulcan"},
+    4: {"name": "Teletubby", "locale": None, "timezone": "Europe/London"},
+}
+
 
 class Config(object):
     """
@@ -15,21 +28,6 @@ class Config(object):
     LANGUAGES = ['en', 'fr']
     BABEL_DEFAULT_LOCALE = 'en'
     BABEL_DEFAULT_TIMEZONE = 'UTC'
-
-
-# configuring the flask app
-app = Flask(__name__)
-app.config.from_object(Config)
-app.url_map.strict_slashes = False
-babel = Babel(app)
-
-
-users = {
-    1: {"name": "Balou", "locale": "fr", "timezone": "Europe/Paris"},
-    2: {"name": "Beyonce", "locale": "en", "timezone": "US/Central"},
-    3: {"name": "Spock", "locale": "kg", "timezone": "Vulcan"},
-    4: {"name": "Teletubby", "locale": None, "timezone": "Europe/London"},
-}
 
 
 def get_user() -> dict:
