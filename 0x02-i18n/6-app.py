@@ -1,13 +1,29 @@
 #!/usr/bin/env python3
-"""Module that sets up a Flask-Babel extension"""
+"""
+Force locale with URL parameter 5-app.py
+"""
 
+
+from flask import Flask, render_template, request, g
 from flask_babel import Babel
-from flask import Flask, g, render_template, request
 
+
+class Config(object):
+    """
+    Returning
+    """
+    LANGUAGES = ['en', 'fr']
+    BABEL_DEFAULT_LOCALE = 'en'
+    BABEL_DEFAULT_TIMEZONE = 'UTC'
+
+
+# configuring the flask app
 app = Flask(__name__)
+app.config.from_object(Config)
+app.url_map.strict_slashes = False
 babel = Babel(app)
 
-# Mock user database
+
 users = {
     1: {"name": "Balou", "locale": "fr", "timezone": "Europe/Paris"},
     2: {"name": "Beyonce", "locale": "en", "timezone": "US/Central"},
@@ -16,42 +32,11 @@ users = {
 }
 
 
-class Config(object):
-    """Configuration class for Flask app"""
-    LANGUAGES = ['en', 'fr']
-    BABEL_DEFAULT_LOCALE = 'en'
-    BABEL_DEFAULT_TIMEZONE = 'UTC'
-
-
-# Set Babel's values using Config class to the flask app
-app.config.from_object('3-app.Config')
-
-
-@app.route('/', methods=['GET'], strict_slashes=False)
-def index() -> str:
-    """Default route for flask app"""
-    return render_template('4-index.html')
-
-
-@babel.localeselector
-def get_locale() -> str:
-    """Determine the best match for the supported languages"""
-    locale = request.args.get('locale')
-    if locale in app.config['LANGUAGES']:
-        print(locale)
-        return locale
-
-    else:
-        return request.accept_languages.best_match(app.config['LANGUAGES'])
-
-
-def get_user(user_id):
-    """Retrieves user information from mock database
-    Args:
-        user_id (int): The ID of the user to retrieve.
-    Returns:
-        dict or None: The user dictionary if found, otherwise None """
-
+def get_user() -> dict:
+    """
+    returns a user dictionary or None if the ID
+    cannot be found or if login_as was not passed.
+    """
     login_id = request.args.get('login_as')
     if login_id:
         return users.get(int(login_id))
@@ -59,13 +44,31 @@ def get_user(user_id):
 
 
 @app.before_request
-def before_request() -> None:
-    """
-    Retrieve user info before each request and set it as global variable.
-    """
-    user = get_user()
-    g.user = user
+def before_request():
+    """find a user if any, and set it as a global on flask.g.user"""
+    if get_user():
+        g.user = get_user()
 
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0")
+@babel.localeselector
+def get_locale():
+    """
+    Returns locale
+    """
+    locale = request.args.get('locale')
+    if locale in app.config['LANGUAGES']:
+        print(locale)
+        return locale
+
+    return request.accept_languages.best_match(app.config['LANGUAGES'])
+
+
+@app.route('/')
+def index():
+    """mocking log in
+    """
+    return render_template('5-index.html', users=users)
+
+
+if __name__ == '__main__':
+    app.run(port="5000", host="0.0.0.0", debug=True)
