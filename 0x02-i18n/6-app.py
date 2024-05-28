@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-
+Module for Use user locale
 """
 
-from flask import Flask, render_template, request, g
+from flask import Flask, config, render_template, request, g
 from flask_babel import Babel
 
 # configure the flask app
 app = Flask(__name__)
-app.config.from_object(Config)
+app.config.from_object(config)
 app.url_map.strict_slashes = False
 babel = Babel(app)
 

@@ -4,12 +4,12 @@ Force locale with URL parameter 5-app.py
 """
 
 
-from flask import Flask, render_template, request, g
+from flask import Flask, render_template, request, g, config
 from flask_babel import Babel
 
 # configuring the flask app
 app = Flask(__name__)
-app.config.from_object(Config)
+app.config.from_object(config)
 app.url_map.strict_slashes = False
 babel = Babel(app)
 
